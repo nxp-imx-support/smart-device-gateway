@@ -1,0 +1,28 @@
+{
+    "log_level": "INFO",
+
+    "model_config_path": "/usr/share/llm/{}/",
+    "model_tokenizer_path": "/usr/share/llm/{}/tokenizer",
+    "use_tool_guided_generation": true,
+
+    "semantic_cache": {
+        "enabled": false,
+        "similarity_threshold": 0.85,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "max_cache_size": 1000,
+        "max_size_percentage_trigger": 0.95,
+        "eviction_percentage": 0.1,
+        "similarity_metric": "cosine"
+    },
+
+    "available_models": [
+        {
+            "name": "Qwen2.5-7B-Instruct",
+            "description": "Qwen2.5 7B instance - Rotated",
+            "type": "text",
+            "tool_calling": "native",
+            "max_prompt_size": 2047,
+            "enabled": true
+        }
+    ]
+}

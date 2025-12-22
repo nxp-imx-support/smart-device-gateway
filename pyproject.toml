@@ -1,0 +1,47 @@
+[project]
+name = "smart-device-gateway"
+version = "1.0.0"
+description = "A server that transforms your devices into intelligent assistants"
+readme = "README.md"
+authors = [
+    { name = "Octavio Torres Delgado", email = "octavio.torres@nxp.com" },
+    { name = "Juan Jorge Mendoza", email = "juanjorge.mendoza@nxp.com" },
+    { name = "Ana Isabel Guillen", email = "anaisabel.guillen_1@nxp.com" },
+    { name = "Meghna Ghole", email = "meghna.ghole_1@nxp.com" },
+]
+requires-python = "==3.13.9"
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn[standard]==0.27.1",
+    "numpy==2.4.1",
+    "openai==2.14.0",
+    "pyyaml==6.0.1",
+    "silero-vad==6.2.0",
+    "huggingface-hub==0.36.0",
+    "transformers==4.57.5",
+    "scipy==1.17.0",
+    "janus==2.0.0",
+    "colorama==0.4.6",
+    "pycairo==1.27.0",
+    "pydantic>=2.12.5",
+    "pygobject==3.52.2",
+    "pygobject-stubs>=2.16.0",
+    "websocket==0.2.1",
+    "onnxruntime==1.23.2",
+]
+
+[project.scripts]
+gateway-server = "smart_device_gateway.server:main"
+edge-voice = "smart_device_gateway.client:main"
+
+[build-system]
+requires = ["uv_build>=0.9.20,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.workspace]
+members = [
+    "client",
+]
+
+[lint]
+ignore = ["E402"]

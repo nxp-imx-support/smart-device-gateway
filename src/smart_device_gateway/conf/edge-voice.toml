@@ -1,0 +1,163 @@
+# =============================================================================
+# Edge Voice - Complete Configuration File
+# =============================================================================
+# This TOML file configures all aspects of the Edge Voice audio processing
+# system including pipelines, actions, and hardware.
+#
+# Schema: UserConfig from home_ai_hub.client.config
+# All sections are optional and will fall back to default values if not specified.
+
+# =============================================================================
+# APPLICATION CONFIGURATION
+# =============================================================================
+[app]
+trigger = "wake-word"                    # How to trigger the system: "wake-word", "button", or "all"
+stop_on = "voice-activity"               # Stop on "voice-activity", "timeout", "button-release"
+
+# Actions to run when system is triggered for interaction
+[on]
+listen = false
+
+[on.events.listen]
+led = false                              # Enable LEDs animation on trigger
+notification = true                      # Enable notification on trigger
+sound = ""                               # Sound to reproduce empty for silence
+
+# =============================================================================
+# OPENAI CONFIGURATION
+# =============================================================================
+[openai]
+domain = "api.openai.com"                # OpenAI API server Domain or IP address
+# port = 8000                            # OpenAI API server port. Uncomment for custom port
+model = "gpt-4o-realtime-preview"        # OpenAI model to use for real-time communication
+api_key = "OPENAI_API_KEY"               # OpenAI API key (use environment variable OPENAI_API_KEY)
+secure = true                            # Use wss when True or ws when False
+
+# OpenAI sink configuration for audio output to AI
+[openai.sink]
+name = "openai_sink"                     # Element name (default: empty)
+channels = 1                             # Audio channels for OpenAI (must be 1)
+audio_format = "S16LE"                   # Audio format for OpenAI (must be S16LE)
+rate = 24000                             # Sample rate for OpenAI (must be 24000)
+emit_signals = true                      # GStreamer Property for appsink
+max_buffers = 2                          # Gstreamer Property for better experience
+sync = false                             # Gstreamer Property for better experience
+# Any other additional GStreamer Property for appsink
+
+# OpenAI source configuration for audio input from AI
+[openai.src]
+name = "openai_src"                      # Element name (default: empty)
+channels = 1                             # Audio channels for OpenAI (must be 1)
+audio_format = "S16LE"                   # Audio format for OpenAI (must be S16LE)
+rate = 24000                             # Sample rate for OpenAI (must be 24000)
+emit_signals = true                      # GStreamer Property for appsink
+is_live = true                           # GStreamer Property for appsink
+format = "time"                          # GStreamer Property 0 - 5 ((0): undefined, (1): default, (2): bytes, (3): time, (4): buffers, (5): percent)
+do_timestamp = true                      # GStreamer Property for appsink
+# Any other additional GStreamer Property for appsrc
+
+# =============================================================================
+# AUDIO HARDWARE CONFIGURATION
+# =============================================================================
+
+# Microphone Configuration
+[mic]
+name = "mic"                             # GStreamer element name (default: empty)
+device = "hw:0,0"                        # ALSA device identifier for microphone
+channels = 1                             # Number of audio channels (1 for mono, 2 for stereo)
+audio_format = "S16LE"                   # Audio format (S16LE, S24LE, S32LE, etc.)
+rate = 24000                             # Sample rate in Hz
+do_timestamp = true                      # Gstreamer Property for better experience
+latency-time = 20000                     # Gstreamer Property for better experience
+buffer-time = 20000                      # Gstreamer Property for better experience
+# Any other additional GStreamer Property for alsasrc
+
+# Speaker Configuration
+[spkr]
+name = "spkr"                            # GStreamer element name (default: empty)
+device = "hw:0,0"                        # ALSA device identifier for speaker
+channels = 1                             # Number of audio channels (1 for mono, 2 for stereo)
+audio_format = "S16LE"                   # Audio format (S16LE, S24LE, S32LE, etc.)
+rate = 24000                             # Sample rate in Hz
+# Any other additional GStreamer Property for alsasrc
+
+# =============================================================================
+# VOICE DETECTION CONFIGURATION
+# =============================================================================
+
+# Voice Interface Technology (VIT) Configuration
+[vit]
+name = "imxvit0"                         # VIT element name
+model_path = ""                          # Path to VIT model file (empty for default)
+silent = false                           # Silent operation mode
+voice_commands = true                    # Enable voice command processing
+
+[vad]
+# Voice Activity Detection (VAD) Element
+name = "imx_vad"                         # VAD element name
+bypass = false                           # Bypass VAD processing
+model = "large"                          # VAD model size: "small", "medium", "large"
+vad_thr = 0.015625                       # VAD threshold (0.0 to 1.0)
+
+# VAD Monitoring Configuration
+[monitors.vad]
+silence_time_sec = 0.8                   # Duration of silence to detect end of speech
+monitor_time_sec = 0.02                  # Monitoring interval in seconds
+print_progress = true                    # Print VAD monitoring progress to console
+
+# =============================================================================
+# ACTION PLUGIN CONFIGURATIONS
+# =============================================================================
+[actions]
+max_workers = 2
+
+# LED Action Configuration
+[actions.led]
+enabled = true                           # Enable LED actions
+retry_count = 3                          # Number of retry attempts
+retry_delay = 1.0                        # Delay between retries (seconds)
+priority = 5                             # Execution priority (lower = higher priority)
+path = "/sys/class/leds/"                # Base filesystem path for LED controls
+leds = []                                # List of LED device names to control
+min = 0                                  # Minimum brightness value
+max = 255                                # Maximum brightness value
+
+# Notification Action Configuration
+[actions.notification]
+enabled = true                           # Enable notification actions
+retry_count = 3                          # Number of retries for failed notifications
+retry_delay = 1.0                        # Delay between retries in seconds
+priority = 5                             # Execution priority (lower = higher priority)
+log_level = "debug"                      # Log level for notifications (info, debug, warning, error, critical)
+custom_format = ""                       # Custom notification format string
+console_output = true                    # Enable console output for notifications
+include_metadata = true                  # Include metadata in notifications
+
+# =============================================================================
+# PIPELINE SPECIFIC CONFIGURATIONS
+# =============================================================================
+
+# Capture Pipeline Settings
+[pipeline.capture]
+name = "EdgeVoice-Capture"               # Pipeline name
+debug = false                            # Enable debug mode (default: false)
+
+# Playback Pipeline Settings
+[pipeline.playback]
+name = "EdgeVoice-Playback"              # Pipeline name
+debug = false                            # Enable debug mode (default: false)
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+[logging]
+log_level = "warning"                    # Global logging level: "info", "debug", "warning", "error", "critical"
+
+# =============================================================================
+# DEVELOPMENT AND DEBUG SETTINGS
+# =============================================================================
+[debug]
+pipeline_dots = false                    # Generate GStreamer pipeline dot files
+verbose_bus_messages = false             # Log all GStreamer bus messages
+mic = false                              # Capture microphone input
+ww = false                               # Capture wakeword sentences

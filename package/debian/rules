@@ -1,0 +1,59 @@
+#!/usr/bin/make -f
+
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+export DH_VERBOSE = 1
+
+# Enable hardening build flags
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# Python build variables
+export PYBUILD_NAME = smart-device-gateway
+export PYBUILD_DESTDIR_python3 = debian/smart-device-gateway
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	# Build the Python wheel from the source directory
+	cd ../ && \
+	uv build -o ./build
+
+override_dh_auto_install:
+	# First call the default install
+	dh_auto_install
+
+	# Install wheel files to the package directory
+	mkdir -p debian/smart-device-gateway/usr/share/python-wheels/
+	cp ../build/*.whl debian/smart-device-gateway/usr/share/python-wheels/
+
+	# Install configuration files
+	mkdir -p debian/smart-device-gateway/usr/share/smart-device-gateway
+	cp ../src/smart_device_gateway/conf/edge-voice.toml debian/smart-device-gateway/usr/share/smart-device-gateway/
+	cp ../src/smart_device_gateway/conf/config.yaml debian/smart-device-gateway/usr/share/smart-device-gateway/
+	cp ../src/smart_device_gateway/conf/server_config.json debian/smart-device-gateway/usr/share/smart-device-gateway/
+	cp ../LICENSE debian/smart-device-gateway/usr/share/smart-device-gateway/
+
+	# Install scripts
+	mkdir -p debian/smart-device-gateway/usr/bin/
+	cp ../demo_tools/install.sh debian/smart-device-gateway/usr/bin/
+	chmod +x debian/smart-device-gateway/usr/bin/install.sh
+
+	cp ../demo_tools/run_client debian/smart-device-gateway/usr/bin/
+	chmod +x debian/smart-device-gateway/usr/bin/run_client
+
+	cp ../demo_tools/run_server debian/smart-device-gateway/usr/bin/
+	chmod +x debian/smart-device-gateway/usr/bin/run_server
+
+	cp ../demo_tools/run_server_only debian/smart-device-gateway/usr/bin/
+	chmod +x debian/smart-device-gateway/usr/bin/run_server_only
+
+override_dh_auto_clean:
+	# First call the default clean
+	dh_auto_clean
+
+	# Clean build artifacts
+	rm -rf ../smart-device-gateway/build/
+	rm -rf ../smart-device-gateway/src/*.egg-info/
+	rm -rf ../smart-device-gateway/src/client/*.egg-info/
+	rm -rf ../smart-device-gateway/src/server/*.egg-info/

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+# Copyright 2025-2026 NXP
+# NXP Proprietary. This software is owned or controlled by NXP and may only be
+# used strictly in accordance with the applicable license terms.  By expressly
+# accepting such terms or by downloading, installing, activating and/or
+# otherwise using the software, you are agreeing that you have read, and that
+# you agree to comply with and are bound by, such license terms.  If you do
+# not agree to be bound by the applicable license terms, then you may not
+# retain, install, activate or otherwise use the software.
+set -e
+
+CONNECTOR_LOG="/tmp/connector.log"
+CONNECTOR_PID_FILE="/tmp/connector.pid"
+SERVER_LOG="/tmp/server.log"
+
+# Cleanup function
+cleanup() {
+    if [ -f "$CONNECTOR_PID_FILE" ]; then
+        kill $(cat "$CONNECTOR_PID_FILE") 2>/dev/null || true
+        rm -f "$CONNECTOR_PID_FILE"
+    fi
+    pkill connector 2>/dev/null || true
+    echo "------------------- Connector closed -------------------"
+}
+trap cleanup EXIT INT TERM
+
+# Start connector if not running
+if ! pgrep -f "aaf-connector" > /dev/null; then
+    echo "Starting connector..."
+    > "$CONNECTOR_LOG"
+
+    nohup bash -c "
+        exec aaf-connector --config "/usr/share/smart-device-gateway/server_config.json" --host 0.0.0.0 --port 8000
+    " > "$CONNECTOR_LOG" 2>&1 &
+
+    echo $! > "$CONNECTOR_PID_FILE"
+
+    # Wait for "Uvicorn running" message
+    timeout=600
+    elapsed=0
+    while [ $elapsed -lt $timeout ]; do
+        if grep -q "Uvicorn running on" "$CONNECTOR_LOG" 2>/dev/null; then
+            echo "Connector ready!"
+            break
+        fi
+        echo -n "."
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+
+    if [ $elapsed -ge $timeout ]; then
+        echo "ERROR: Connector startup timeout"
+        tail -n 30 "$CONNECTOR_LOG"
+        exit 1
+    fi
+else
+    echo "Connector already running"
+fi
+
+VENV_PATH="/usr/share/smart-device-gateway/venv"
+
+. "$VENV_PATH/bin/activate"
+gateway-server "$@"

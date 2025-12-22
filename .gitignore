@@ -1,0 +1,16 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+re*.wav
+src/.cache/
+package/debian/smart-device-gateway*
+package/debian/debhelper-build-stamp
+package/debian/files
+package/debian/.debhelper*
+
+# Virtual environments
+.venv
