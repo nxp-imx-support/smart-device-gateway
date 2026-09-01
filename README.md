@@ -132,7 +132,7 @@ For instructions on how to build the Debian package from source, please refer to
 ## Installation (Server-side)
 On your board, run the following commands to install and run the server:
 ```bash
-dpkg -i smart-device-gateway_1.0.0_all.deb
+dpkg -i smart-device-gateway_1.0.3_all.deb
 # After installation
 run_server_only --host 0.0.0.0 --port 8080
 ```

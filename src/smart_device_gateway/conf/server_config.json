@@ -15,6 +15,19 @@
         "similarity_metric": "cosine"
     },
 
+    "llm_params": {
+        "generate_max_tokens": 512,
+        "seed": 42,
+        "temperature": 0.0,
+        "top_k": 0,
+        "top_p": 0.0,
+        "repeat_penalty": 1.12,
+        "repeat_last_n": 32,
+        "ngram_penalty": 10,
+        "frequency_penalty": 1.12,
+        "suppress_penalty": 100.0
+    },
+
     "available_models": [
         {
             "name": "Qwen2.5-7B-Instruct",

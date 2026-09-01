@@ -1,3 +1,9 @@
+smart-device-gateway (1.0.3) stable; urgency=medium
+
+  * Update to version 1.0.3
+
+ -- Carlos Casillas Mora <carlos.mora@nxp.com>  Thu, 27 Aug 2026 15:08:37 -0700
+
 smart-device-gateway (1.0.0) stable; urgency=medium
 
   * First package version.

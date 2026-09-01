@@ -1,6 +1,6 @@
 [project]
 name = "smart-device-gateway"
-version = "1.0.0"
+version = "1.0.3"
 description = "A server that transforms your devices into intelligent assistants"
 readme = "README.md"
 authors = [
@@ -9,7 +9,7 @@ authors = [
     { name = "Ana Isabel Guillen", email = "anaisabel.guillen_1@nxp.com" },
     { name = "Meghna Ghole", email = "meghna.ghole_1@nxp.com" },
 ]
-requires-python = "==3.13.9"
+requires-python = ">=3.14.4,<3.15"
 dependencies = [
     "fastapi==0.109.0",
     "uvicorn[standard]==0.27.1",
@@ -27,7 +27,7 @@ dependencies = [
     "pygobject==3.52.2",
     "pygobject-stubs>=2.16.0",
     "websocket==0.2.1",
-    "onnxruntime==1.23.2",
+    "onnxruntime==1.24.3",
 ]
 
 [project.scripts]
@@ -35,13 +35,11 @@ gateway-server = "smart_device_gateway.server:main"
 edge-voice = "smart_device_gateway.client:main"
 
 [build-system]
-requires = ["uv_build>=0.9.20,<0.10.0"]
-build-backend = "uv_build"
-
-[tool.uv.workspace]
-members = [
-    "client",
-]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [lint]
 ignore = ["E402"]
+
+[tool.setuptools.package-data]
+smart_device_gateway = ["server/database/*.json"]

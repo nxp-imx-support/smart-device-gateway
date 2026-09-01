@@ -119,7 +119,7 @@ echo -e " ${YELLOW}${WARNING}${RESET} $1"
 
 # Package information
 PACKAGE_NAME="Smart Device Gateway"
-PACKAGE_VERSION="1.0.0"
+PACKAGE_VERSION="1.0.3"
 
 case "$1" in
     purge|remove)
